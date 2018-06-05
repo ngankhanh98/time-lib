@@ -4,7 +4,7 @@
 	p_year: .space 5
 
 	time: .asciiz "12/01/1998"
-	time_1: .asciiz "01/05/1998"
+	time_1: .asciiz "--/--/----"
 	convert_time: .space 20
 
 	# days
@@ -65,14 +65,19 @@
 .text
 	.globl main
 main:
+	con:
 	la	$a0, time
-	la	$a1, time_1
-	jal	gettime
-	move	$a0, $v0
-	
-	li	$v0, 1
-	syscall	
+	jal	menu
 
+	la	$a0, m_continue
+	li	$v0, 4
+	syscall
+
+	li	$v0, 5
+	syscall	
+	beq	$v0, $0, EOP
+	j	con
+EOP:
 	li	$v0, 10
 	syscall
 	
@@ -321,17 +326,23 @@ khongnhuan:
 o5:
 	la	$a0, time_1
 	jal	prompt
+	move	$a0, $v0
+	jal	thisIsMagic
 	move	$a1, $v0
 
-	lw	$a0, ($sp)
 
-	jal	gettime
+	lw	$a0, ($sp)
+	jal	thisIsMagic
 	move	$a0, $v0
 	
-	li	$v0, 1
-	syscall
-	li	$v0, 10
-	syscall
+	sub	$a0, $a0, $a1
+	slt	$t0, $a0, $0	# if(thisIsMagic(time) - thisIsMagic(time_1) < 0)
+	beq	$t0, $0, print
+	li	$t0, -1
+	mult	$a0, $t0
+	mflo	$a0
+	j 	print
+print:
 	move	$t0, $a0	# $t0 = so ngay ne
 	
 	la	$a0, result
@@ -799,32 +810,30 @@ END_SWITCH:
 gettime:
 	addi	$sp, $sp, -16
 	sw	$ra, 12($sp)
-	sw	$a0, 8($sp)
-	sw	$a1, 4($sp)
-	sw	$t0, 0($sp)
+	sw	$t0, 8($sp)
+	sw	$t1, 4($sp)
+	sw	$t2, 0($sp)
 
-	jal	thisIsMagic
-	move	$a1, $v0
+	jal	year
+	move	$t0, $v0
 
+	la	$a0, ($a1)
+	jal	year
+	move	$t1, $v0
 
-	move	$a0, $a1
-	jal	thisIsMagic
-	move	$a0, $v0
-	
-	sub	$a0, $a0, $a1
-	slt	$t0, $a0, $0	# if(thisIsMagic(time) - thisIsMagic(time_1) < 0)
-	beq	$t0, $0, out
+	sub	$v0, $t1, $t0
+
+	slt	$t0, $v0, $0
+	beq	$t0, $0, EOG
 	li	$t0, -1
-	mult	$a0, $t0
-	mflo	$a0
-	j 	out
-out:
-	move	$v0, $a0
-
+	mult	$v0, $t0
+	mflo	$v0
+EOG:
+	
 	lw	$ra, 12($sp)
-	lw	$a0, 8($sp)
-	lw	$a1, 4($sp)
-	lw	$t0, 0($sp)
+	lw	$t0, 8($sp)
+	lw	$t1, 4($sp)
+	lw	$t2, 0($sp)
 
 	addi	$sp, $sp, 16
 
@@ -833,7 +842,8 @@ out:
 weekday:
 	addi 	$sp, $sp, -32
 	sw	$ra, 28($sp)
-	
+	sw	$a0, 24($sp)
+	sw	$t0, 20($sp)
 	sw	$t1, 16($sp)
 	sw	$t2, 12($sp)
 	sw	$t3, 8($sp)
