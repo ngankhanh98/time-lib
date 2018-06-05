@@ -1,4 +1,4 @@
-# TIME-MIPS-
+# TIME
 Đồ án 2 Kiến trúc máy tính &amp; hợp ngữ, bằng hợp ngữ MIPS
 
 <b>1. Chức năng:</b> chương trình minh họa có giao diện menu như sau:
