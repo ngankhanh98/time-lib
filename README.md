@@ -2,7 +2,7 @@
 Đồ án 2 Kiến trúc máy tính &amp; hợp ngữ, bằng hợp ngữ MIPS
 
 <b>1. Chức năng:</b> chương trình minh họa có giao diện menu như sau:
-<code>
+```
 - Nhap ngay DAY:
 - Nhap thang MONTH: 
 - Nhap nam YEAR: 
@@ -21,7 +21,7 @@ C. DD Month, YYYY
 nhuận thì tháng 2 có 29 ngày, sinh viên cần kiểm tra kỹ.)
 - Lựa chọn:
 - Kết quả:
-</code>
+```
 
 <b>2. Các hàm quan trọng </b><br/>
 <b><code>char* Date(int day, int month, int year, char* TIME)</code></b><br/>
